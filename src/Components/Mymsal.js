@@ -9,154 +9,194 @@ import config from '../config';
 
 class MyMsal extends React.Component {
     //your codding
-    
-    constructor(props)
-    {
+    accessToken;
+    constructor(props) {
         super(props);
         console.log(Client);
         this.loginPopup = this.loginPopup.bind(this);
         this.loginRedirect = this.loginRedirect.bind(this);
         this.loginssoSilent = this.loginssoSilent.bind(this);
         this.MyaquireTokenSilence = this.MyaquireTokenSilence.bind(this);
-        this.msalConfig = 
+        this.MyaquireTokenSilence2 = this.MyaquireTokenSilence2.bind(this);
+        this.sendGraphApi = this.sendGraphApi.bind(this);
+        this.msalConfig =
         {
-            auth : {
-                clientId : config["client_ID"],
+            auth: {
+                clientId: config["client_ID"],
                 // redirectUrl : config["redirectUrl"],
-                authority : config["authority"]                
+                authority: config["authority"]
             },
-            catch :{
+            catch: {
                 catcheLocation: "sessionStorage",
-                storeAuthStateInCookie : false
+                storeAuthStateInCookie: false
             }
         }
-        this.loginRequest = 
+        this.loginRequest =
         {
             scopes: ["openid", "profile", "User.Read"]
         }
-        this.tokenRequest = 
+        this.tokenRequest =
         {
-            scopes:["Mail.Read"]
+            scopes: ["Mail.Read"]
         }
         this.msalApplication = new UserAgentApplication(this.msalConfig);
     }
-   
+
     async loginPopup() {   //d使用 public app ??  
         // console.log("call TestMsGraph");      
         // console.log(`redirecturl : ${ config["redirectUrl"]}`);
         const graphScopes = config["graphScopes"];
         this.msalApplication.loginPopup(this.loginRequest)
-          .then(loginRespopnse => {
-              console.log(`loginResponse :${loginRespopnse}`);
-              
+            .then(loginRespopnse => {
+                console.log(`loginResponse :${loginRespopnse}`);
+
                 // Object.keys(loginRespopnse).forEach((item, index, array) =>
                 // {
                 //     console.log(`item : ${item}, value: ${loginRespopnse[item]}`);
                 // });
                 // console.log(Object.keys(loginRespopnse["idToken"]));
                 // console.log(loginRespopnse["idToken"].toString());
-          }).catch( err => {
+            }).catch(err => {
                 console.log(`err : ${err}`);
-          });
-          if(this.msalApplication.getAccount())
-          {
-              const myAccounts = this.msalApplication.getAccount();
-              console.log(myAccounts)
-          }
+            });
+        if (this.msalApplication.getAccount()) {
+            const myAccounts = this.msalApplication.getAccount();
+            console.log(myAccounts)
+        }
         // myAccounts.forEach(item =>{
         //     console.log(item);
         // })
-        
+
     }
     // getTokenPopup(request)
     // {
 
     // }
-    async loginRedirect()
-    {
-        
-        try{
+    async loginRedirect() {
+
+        try {
             const loginResponse = await this.msalApplication.loginRedirect(this.loginRequest);
             console.log(`loginResponse :${loginResponse}`);
-            if(this.msalApplication.getAccount())
-              Object.keys(loginResponse).forEach((item, index, array) =>
-              {
-                  console.log(`item : ${item}, value: ${loginResponse[item]}`);
-              });
-              console.log(Object.keys(loginResponse["idToken"]));
-              console.log(loginResponse["idToken"].toString());
-        }catch(err)
-        {
+            if (this.msalApplication.getAccount())
+                Object.keys(loginResponse).forEach((item, index, array) => {
+                    console.log(`item : ${item}, value: ${loginResponse[item]}`);
+                });
+            console.log(Object.keys(loginResponse["idToken"]));
+            console.log(loginResponse["idToken"].toString());
+        } catch (err) {
             console.log(err);
         }
     }
-    async loginssoSilent()
-    {
+    async loginssoSilent() {
         const silentrequest = {
-            scope : ["User.Read", "Mail.Read"],
-            loginHint :"Royce.Wang@wiadvance.com"
+            scope: ["User.Read", "Mail.Read"],
+            loginHint: "Royce.Wang@wiadvance.com"
         };
-        try{
+        try {
             const loginesponse = await this.msalApplication.ssoSilent(silentrequest);
-            if(loginesponse)
-            {
+            if (loginesponse) {
                 console.log(`loginResponse :${loginesponse}`);
                 const myAccounts = this.msalApplication.getAccount();
                 console.log(myAccounts)
             }
-        }catch(err)
-        {
-            if(err instanceof InteractionRequiredAuthError)
-            {
+        } catch (err) {
+            if (err instanceof InteractionRequiredAuthError) {
                 const loginesponse = await this.msalApplication.loginPopup(silentrequest).catch(err)
                 {
                     console.log(err);
                 }
             }
-            else{
+            else {
                 console.log("err happend ,but not InteractionRequiredAuthError");
             }
         }
     }
-    MyaquireTokenSilence()
-    {
+    MyaquireTokenSilence() {
         var request = {
-            scopes : ["Mail.Read"]
+            scopes: ["Mail.Read"]
         };
         this.msalApplication.acquireTokenSilent(request).then(
-            tokenResponse=>{
+            tokenResponse => {
                 console.log(`acquireTokenSilent tokenResponse ${tokenResponse}`);
                 console.log(` access token ${tokenResponse.accessToken}`);
+                this.accessToken = tokenResponse.accessToken;
             }
         )
-    .catch((err)=>{
-        if(err instanceof InteractionRequiredAuthError)
-        {
-            return this.msalApplication.acquireTokenPopup(request);
-        }
-    }).catch(err=>{
-        console.log(err);
-    })
-
+            .catch((err) => {
+                if (err instanceof InteractionRequiredAuthError) {
+                    return this.msalApplication.acquireTokenPopup(request);
+                }
+            }).catch(err => {
+                console.log(err);
+            })
     }
-    render(){
-        // this.TestMsGraph(config);
-        return (
-            <div>
-            <button onClick = {this.loginPopup}>
+    async MyaquireTokenSilence2() {
+        const request = {
+            scopes: ["Mail.Read"]
+        }
+        try {
+            const tokenResponse = await this.msalApplication.acquireTokenSilent(request);
+            if (tokenResponse) {
+                console.log(`acquireTokenSilent tokenResponse ${tokenResponse}`);
+                console.log(` access token ${tokenResponse.accessToken}`);
+                this.accessToken = tokenResponse.accessToken;
+            }
+        }catch(err){
+            if(err instanceof InteractionRequiredAuthError)
+            {
+                this.msalApplication.acquireTokenPopup(request)
+                .then(tokenResponse=>{
+                    console.log(`aquire token by acquireTokenPopu ${tokenResponse}`);
+                })
+                .catch(err)
+                {
+                    console.log(`err : ${err}`);
+                }
+            }
+        } 
+    }
+
+    sendGraphApi()
+    {
+        var headers = new Headers();
+        var bearer = "Bearer " + this.accessToken;
+        console.log(bearer);
+        headers.append("Authorization", bearer);
+        var options = {
+            method : "GET",
+            headers : headers
+        }
+        var graphEndpoint = "https://graph.microsoft.com/v1.0/me";
+        fetch(graphEndpoint, options)
+        .then(res=>{
+            console.log(res.body);
+        });
+    }
+
+render(){
+    // this.TestMsGraph(config);
+    return (
+        <div>
+            <button onClick={this.loginPopup}>
                 loginPopup
             </button>
-            <button onClick = {this.loginRedirect}>
-            loginRedirect
+            <button onClick={this.loginRedirect}>
+                loginRedirect
             </button>
-            <button onClick = {this.loginssoSilent}>
-            loginssoSilent
+            <button onClick={this.loginssoSilent}>
+                loginssoSilent
             </button>
-            <button onClick = {this.MyaquireTokenSilence}>
-            MyaquireTokenSilence
+            <button onClick={this.MyaquireTokenSilence}>
+                MyaquireTokenSilence
             </button>
-            </div>
-        )
-      } 
+            <button onClick={this.MyaquireTokenSilence2}>
+            MyaquireTokenSilence2
+            </button>
+            <button onClick={this.sendGraphApi}>
+            sendGraphApi
+            </button>
+        </div>
+    )
+} 
    }
 export default MyMsal;
