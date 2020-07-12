@@ -4,11 +4,13 @@ import './index.css';
 import App from './App';
 import MyMsal from './Components/Mymsal';
 import * as serviceWorker from './serviceWorker';
+import {MyGraphApi} from "./Components/MyGrapApi";
 
 ReactDOM.render(
   <React.StrictMode>
     <App />
     <MyMsal/>
+    <MyGraphApi/>
   </React.StrictMode>,
   document.getElementById('root')
 );

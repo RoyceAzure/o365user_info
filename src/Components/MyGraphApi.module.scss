@@ -1,0 +1,29 @@
+.wrap{
+    flex:1;
+    width: 100%;
+    margin: 0px auto;
+    height: 500px;
+    .title{
+        text-align: center;
+        padding: 10px 0px;
+        font-size: 17px;
+        color: #f66;
+    }
+    .form{
+        text-align: center;
+    }
+    ul{
+        display: flex;
+        justify-content: center;
+        li{
+            padding: 6px 10px;
+            background: rgba(87,199,255,0.1);
+            margin: 12px 5px;
+            border-radius: 3px;
+            list-style: none;
+        }
+    }
+
+
+
+}

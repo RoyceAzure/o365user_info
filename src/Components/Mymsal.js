@@ -2,6 +2,7 @@ import React from 'react';
 import "isomorphic-fetch";
 import { Client } from "@microsoft/microsoft-graph-client";
 import { render } from 'react-dom';
+// import * as msal from "msal";
 import { UserAgentApplication, InteractionRequiredAuthError } from "msal";
 import { ImplicitMSALAuthenticationProvider } from "@microsoft/microsoft-graph-client/lib/src/ImplicitMSALAuthenticationProvider";
 import { MSALAuthenticationProviderOptions } from '@microsoft/microsoft-graph-client/lib/src/MSALAuthenticationProviderOptions';
@@ -12,19 +13,21 @@ class MyMsal extends React.Component {
     accessToken;
     constructor(props) {
         super(props);
-        console.log(Client);
+        // console.log(Client);
         this.loginPopup = this.loginPopup.bind(this);
         this.loginRedirect = this.loginRedirect.bind(this);
         this.loginssoSilent = this.loginssoSilent.bind(this);
         this.MyaquireTokenSilence = this.MyaquireTokenSilence.bind(this);
         this.MyaquireTokenSilence2 = this.MyaquireTokenSilence2.bind(this);
         this.sendGraphApi = this.sendGraphApi.bind(this);
+        this.myLoginout = this.myLoginout.bind(this);
         this.msalConfig =
         {
             auth: {
                 clientId: config["client_ID"],
                 // redirectUrl : config["redirectUrl"],
-                authority: config["authority"]
+                authority: config["authority"],
+                // postLogoutRedirectUri: "https://127.0.0.1:3000",
             },
             catch: {
                 catcheLocation: "sessionStorage",
@@ -101,10 +104,11 @@ class MyMsal extends React.Component {
             }
         } catch (err) {
             if (err instanceof InteractionRequiredAuthError) {
-                const loginesponse = await this.msalApplication.loginPopup(silentrequest).catch(err)
-                {
-                    console.log(err);
-                }
+                this.msalApplication.loginPopup(silentrequest)
+                .catch(err=>{
+                    console.log(`err : ${err}`);
+                })
+ 
             }
             else {
                 console.log("err happend ,but not InteractionRequiredAuthError");
@@ -134,26 +138,20 @@ class MyMsal extends React.Component {
         const request = {
             scopes: ["Mail.Read"]
         }
-        try {
-            const tokenResponse = await this.msalApplication.acquireTokenSilent(request);
-            if (tokenResponse) {
-                console.log(`acquireTokenSilent tokenResponse ${tokenResponse}`);
-                console.log(` access token ${tokenResponse.accessToken}`);
-                this.accessToken = tokenResponse.accessToken;
-            }
-        }catch(err){
-            if(err instanceof InteractionRequiredAuthError)
-            {
-                this.msalApplication.acquireTokenPopup(request)
-                .then(tokenResponse=>{
-                    console.log(`aquire token by acquireTokenPopu ${tokenResponse}`);
-                })
-                .catch(err)
-                {
-                    console.log(`err : ${err}`);
-                }
-            }
-        } 
+       this.msalApplication.acquireTokenSilent(request)
+       .then(responsee=>{
+            console.log(responsee)
+            this.accessToken = responsee.accessToken;
+       })
+       .catch(async (err)=>{
+           if(err instanceof InteractionRequiredAuthError)
+           {
+               return await this.msalApplication.acquireTokenPopup(request);   //是要return 
+           }
+       }).catch(err=>{
+           console.log(`err ${err}`);
+       })
+
     }
 
     sendGraphApi()
@@ -171,6 +169,13 @@ class MyMsal extends React.Component {
         .then(res=>{
             console.log(res.body);
         });
+    }
+    myLoginout()
+    {
+        // const currentaccount = this.msalApplication.getAccountByUsername("Royce.Wang@wiadvance.com");
+        this.msalApplication.logout({
+            // account : currentaccount
+        })
     }
 
 render(){
@@ -194,6 +199,9 @@ render(){
             </button>
             <button onClick={this.sendGraphApi}>
             sendGraphApi
+            </button>
+            <button onClick={this.myLoginout}>
+            myLoginout
             </button>
         </div>
     )
