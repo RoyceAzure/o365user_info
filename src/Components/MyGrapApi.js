@@ -8,7 +8,9 @@ import config from '../config';
 export class MyGraphApi extends React.PureComponent {
 
     state = {
-        url: ""
+        url: "",
+        graph_version : "beta",
+        graph_permission : []
     }
 
 
@@ -26,47 +28,84 @@ export class MyGraphApi extends React.PureComponent {
                 storeAuthStateInCookie: false
             }
         }
-        this.graphScopes = ["user.read", "mail.send"];
+        this.graphScopes = ["user.read"];
+        this.handlePermissionChange = this.handlePermissionChange.bind(this);
         this.msalApplication = new UserAgentApplication(this.msalconfig);
         this.option = new MSALAuthenticationProviderOptions(this.graphScopes);
         this.authProvider = new ImplicitMSALAuthenticationProvider(this.msalApplication, this.option);
         this.graphClientOptions = {
-            authProvider : this.authProvider
+            authProvider: this.authProvider
         }
         this.client = Client.initWithMiddleware(this.graphClientOptions);
+
     }
 
-
-    testGraphrequest = async (e,arg1) =>
-    {
+    printErr = (err)=>{
+        Object.keys(err).forEach(key=>{
+            console.log(`err key : ${key}, err value : ${err[key]}`);
+        })
+    }
+    testGraphrequest = async (e, arg1) => {
         // console.log(this.client)
-        const {url} = this.state;
+        const { url, graph_version } = this.state;
         console.log(`url : ${url}`);
-        try{
+        console.log(`url : ${graph_version}`);
+        // this.msalApplication = new UserAgentApplication(this.msalconfig);
+        // this.option = new MSALAuthenticationProviderOptions(this.state.graph_permission);
+        // this.authProvider = new ImplicitMSALAuthenticationProvider(this.msalApplication, this.option);
+        // this.graphClientOptions = {
+        //     authProvider: this.authProvider
+        // }
+        // this.client = Client.initWithMiddleware(this.graphClientOptions);
+        try {
             let userDetails = await this.client.api(url)
-            .version("beta")
-            .get();
+                .version(graph_version)
+                .get();
             console.log(userDetails);
-            console.log(this.client);
         }
-        catch(err){
+        catch (err) {
             console.log(`err : ${err}`);
+            this.printErr(err);
         }
     }
-
+    handlePermissionChange= (e)=>{
+        e.preventDefault();
+        const permission = [];
+        let str = e.target.value.split(",");
+        Object.values(str).forEach((item,index)=>{
+            permission.push(item.trim());
+        })
+        this.setState({graph_permission : permission});
+        console.log(this.state.graph_permission);
+    }
     render() {
-        const {url} = this.state;
+        const { url, graph_permission } = this.state;
         return (
             <div className={style.wrap}>
                 <h2 className={style.title}>MyGraphApi</h2>
                 <div>
-                    <form className = {style.form}>
-                        <label>input graph api url</label>
-                        <input value = {url} type ="text" onChange = {e=>this.setState({url : e.target.value})}/>
+                    <form className={style.form}>
+                        <ul>
+                            <li>
+                                <label><p>input graph api url </p></label>
+                                <input value={url} type="text" onChange={e => this.setState({ url: e.target.value })} />
+                            </li>
+                            <li>
+                                <label><p>version:</p></label>
+                                <select value = {this.state.graph_version} onChange = {e=>{this.setState({graph_version : e.target.value})}}>
+                                    <option value="beta">beta</option>
+                                    <option value="v1.0">v1.0</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label><p>Permission:</p></label>
+                                <input value = {graph_permission} type="text" onChange = {e=>{this.handlePermissionChange(e)}}/>
+                            </li>
+                        </ul>
                     </form>
                     <ul>
                         <li>
-                            <button onClick = {e=>this.testGraphrequest(e,1)}>testGraphrequest</button>
+                            <button onClick={e => this.testGraphrequest(e, 1)}>testGraphrequest</button>
                         </li>
                     </ul>
                 </div>
