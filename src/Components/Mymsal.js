@@ -41,29 +41,29 @@ class MyMsal extends React.Component {
         const msalApplication = new UserAgentApplication(msalConfig);
 
 
-        // msalApplication.loginPopup(loginRequest)
-        //   .then(loginRespopnse => {
-        //       console.log(`loginResponse :${loginRespopnse}`);
-        //       if(msalApplication.getAccount())
-        //         Object.keys(loginRespopnse).forEach((item, index, array) =>
-        //         {
-        //             console.log(`item : ${item}, value: ${loginRespopnse[item]}`);
-        //         });
-        //         console.log(Object.keys(loginRespopnse["idToken"]));
-        //         console.log(loginRespopnse["idToken"].toString());
-        //   }).catch( err => {
-        //         console.log(`err : ${err}`);
-        //   });
-        try{
-            const loginResponser = msalApplication.loginPopup(loginRequest);
-            if(loginResponser)
-                Object.keys(loginResponser).forEach(item => {
-                    console.log(`keys : ${item}, value : ${loginResponser[item]}`)
-                })
-        }catch(err)
-        {
-            console.log(err);
-        }
+        msalApplication.loginPopup(loginRequest)
+          .then(loginRespopnse => {
+              console.log(`loginResponse :${loginRespopnse}`);
+              if(msalApplication.getAccount())
+                Object.keys(loginRespopnse).forEach((item, index, array) =>
+                {
+                    console.log(`item : ${item}, value: ${loginRespopnse[item]}`);
+                });
+                console.log(Object.keys(loginRespopnse["idToken"]));
+                console.log(loginRespopnse["idToken"].toString());
+          }).catch( err => {
+                console.log(`err : ${err}`);
+          });
+        // try{
+        //     const loginResponser = msalApplication.loginPopup(loginRequest);
+        //     if(loginResponser)
+        //         Object.keys(loginResponser).forEach(item => {
+        //             console.log(`keys : ${item}, value : ${loginResponser[item]}`)
+        //         })
+        // }catch(err)
+        // {
+        //     console.log(err);
+        // }
 
 
         // const provideroptions = new MSALAuthenticationProviderOptions(graphScopes);
