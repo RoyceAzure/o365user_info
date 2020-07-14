@@ -30,13 +30,7 @@ export class MyGraphApi extends React.PureComponent {
         }
         this.graphScopes = ["user.read"];
         this.handlePermissionChange = this.handlePermissionChange.bind(this);
-        this.msalApplication = new UserAgentApplication(this.msalconfig);
-        this.option = new MSALAuthenticationProviderOptions(this.graphScopes);
-        this.authProvider = new ImplicitMSALAuthenticationProvider(this.msalApplication, this.option);
-        this.graphClientOptions = {
-            authProvider: this.authProvider
-        }
-        this.client = Client.initWithMiddleware(this.graphClientOptions);
+
 
     }
 
@@ -50,13 +44,13 @@ export class MyGraphApi extends React.PureComponent {
         const { url, graph_version } = this.state;
         console.log(`url : ${url}`);
         console.log(`url : ${graph_version}`);
-        // this.msalApplication = new UserAgentApplication(this.msalconfig);
-        // this.option = new MSALAuthenticationProviderOptions(this.state.graph_permission);
-        // this.authProvider = new ImplicitMSALAuthenticationProvider(this.msalApplication, this.option);
-        // this.graphClientOptions = {
-        //     authProvider: this.authProvider
-        // }
-        // this.client = Client.initWithMiddleware(this.graphClientOptions);
+        this.msalApplication = new UserAgentApplication(this.msalconfig);
+        this.option = new MSALAuthenticationProviderOptions(this.state.graph_permission);
+        this.authProvider = new ImplicitMSALAuthenticationProvider(this.msalApplication, this.option);
+        this.graphClientOptions = {
+            authProvider: this.authProvider
+        }
+        this.client = Client.initWithMiddleware(this.graphClientOptions);
         try {
             let userDetails = await this.client.api(url)
                 .version(graph_version)
