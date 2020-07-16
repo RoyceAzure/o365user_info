@@ -13,8 +13,9 @@ export class MyGraphApi extends React.PureComponent {
         graph_permission : []
     }
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
+        console.log(props.test)
         this.msalconfig = {
             auth: {
                 clientId: config["client_ID"],
@@ -27,7 +28,7 @@ export class MyGraphApi extends React.PureComponent {
                 storeAuthStateInCookie: false
             }
         }
-        this.handlePermissionChange = this.handlePermissionChange.bind(this);
+     
 
 
     }

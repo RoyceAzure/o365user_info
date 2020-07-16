@@ -7,10 +7,11 @@ import * as serviceWorker from './serviceWorker';
 import {MyGraphApi} from "./Components/MyGrapApi";
 
 ReactDOM.render(
+
   <React.StrictMode>
     <App />
     <MyMsal/>
-    <MyGraphApi/>
+    <MyGraphApi test="hujkk"/>
   </React.StrictMode>,
   document.getElementById('root')
 );
