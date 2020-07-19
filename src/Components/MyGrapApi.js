@@ -3,6 +3,7 @@ import { Client } from "@microsoft/microsoft-graph-client";
 import { ImplicitMSALAuthenticationProvider } from "@microsoft/microsoft-graph-client/lib/src/ImplicitMSALAuthenticationProvider";
 import { MSALAuthenticationProviderOptions } from '@microsoft/microsoft-graph-client/lib/src/MSALAuthenticationProviderOptions';
 import { UserAgentApplication } from "msal";
+import {Cosmos_service} from "../services/Cosmos.service";
 import style from "./MyGraphApi.module.scss";
 import config from '../config';
 export class MyGraphApi extends React.PureComponent {
@@ -70,6 +71,12 @@ export class MyGraphApi extends React.PureComponent {
         this.setState({graph_permission : permission});
         console.log(this.state.graph_permission);
     }
+     testCosmos = async e=>{
+        const client = new Cosmos_service(process.env.cosmos_connect_string);
+        await client.createDatabase("testDatabase");
+        await client.createCollection("testCollection");
+        await client.createItem("testCreateItem", "itemValue");
+    }
     render() {
         const { url, graph_permission } = this.state;
         return (
@@ -98,6 +105,7 @@ export class MyGraphApi extends React.PureComponent {
                     <ul>
                         <li>
                             <button onClick={e => this.testGraphrequest(e, 1)}>testGraphrequest</button>
+                            <button onClick={e => this.testCosmos(e)}>testCosmos</button>
                         </li>
                     </ul>
                 </div>
