@@ -5,6 +5,7 @@ import App from './App';
 import MyMsal from './Components/Mymsal';
 import * as serviceWorker from './serviceWorker';
 import {MyGraphApi} from "./Components/MyGrapApi";
+import CosmosService from "./Services/CosmosService";
 
 ReactDOM.render(
 
@@ -12,6 +13,7 @@ ReactDOM.render(
     <App />
     <MyMsal/>
     <MyGraphApi test="hujkk"/>
+    <CosmosService/>
   </React.StrictMode>,
   document.getElementById('root')
 );
